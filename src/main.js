@@ -1,7 +1,6 @@
-//TODO harden
-//TODO select client?
-//TODO move variables to text file/console input
+//TODO: Harden flow and handle edge cases/failures
 
+require('dotenv').config();
 const puppeteer = require('puppeteer');
 
 function log(message) {
@@ -13,14 +12,15 @@ function log(message) {
 
     log("Launching browser");
 
-    const email = 'admin1@foundationsoft.com'; //temp input
-    const password = 'Foundation#1'; //temp input
-    const url = 'https://app-dev.myprojecthq.com/';
+    const email = process.env.LOGIN_USER_EMAIL;
+    const password = process.env.LOGIN_USER_PASSWORD;
+    const clientName = process.env.CLIENT_NAME;
+    const url = process.env.PHQ_URL;
+    const getClientUrl = process.env.PHQ_GETCLIENT_URL;
+
     const emailAddressSelector = 'input[id=signInName]';
     const passwordInputSelector = 'input[id=password]';
     const loginButtonSelector = 'button[id=next]';
-    const getClientUrl = 'https://apim-myprojecthq-dev.azure-api.net/setup/v1/Clients/?api-version=1.0';
-    const clientName = 'VoltWork Electric';
     const showBrowser = false;
 
     const browser = await puppeteer.launch({ headless: !showBrowser });
