@@ -8,15 +8,15 @@ const puppeteer = require('puppeteer');
 
     console.log("Launching headless browser");
 
-    const email = ''; //temp input
-    const password = ''; //temp input
-    const url = 'https://app.myprojecthq.com/';
+    const email = 'admin1@foundationsoft.com'; //temp input
+    const password = 'Foundation#1'; //temp input
+    const url = 'https://app-dev.myprojecthq.com/';
     const emailAddressSelector = 'input[id=signInName]';
     const passwordInputSelector = 'input[id=password]';
     const loginButtonSelector = 'button[id=next]';
-    const getClientUrl = 'https://apim-fslenterprise-prod.azure-api.net/myprojecthq/api/Clients/?api-version=1.0';
+    const getClientUrl = 'https://apim-myprojecthq-dev.azure-api.net/setup/v1/Clients/?api-version=1.0';
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     console.log(`Navigating to ${url}`);
@@ -44,13 +44,21 @@ const puppeteer = require('puppeteer');
 
     if (firstResponse.ok) {
 
+        //Wait for the first client button to show
+        await page.waitForXPath('//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[1]/button')
+
+        //Find the span with the client name supplied in it, then grab its parent which will be the button to click
+        const button = await page.$x("//span[contains(., 'Volt')]/parent::*"); //button
+
+        await button[0].click();
+
         console.log(`Extracting accessToken`);
 
         const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
 
         console.log(`accessToken: ${localStorage.accessToken}`);
 
-        await browser.close();
+        //await browser.close();
 
         return localStorage.accessToken;
     }
