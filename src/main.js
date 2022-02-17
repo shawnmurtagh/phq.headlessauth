@@ -1,5 +1,6 @@
 //TODO harden
 //TODO select client?
+//TODO move variables to text file/console input
 
 const puppeteer = require('puppeteer');
 
@@ -15,7 +16,7 @@ const puppeteer = require('puppeteer');
     const loginButtonSelector = 'button[id=next]';
     const getClientUrl = 'https://apim-fslenterprise-prod.azure-api.net/myprojecthq/api/Clients/?api-version=1.0';
 
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     console.log(`Navigating to ${url}`);
@@ -24,15 +25,15 @@ const puppeteer = require('puppeteer');
 
     console.log(`Waiting for selector ${emailAddressSelector}`);
 
-    await page.waitForSelector(emailAddressSelector);
-
     console.log(`Setting selector ${emailAddressSelector}`);
 
     console.log(`Setting value ${email} for selector ${emailAddressSelector}`);
-    await page.$eval(emailAddressSelector, el => el.value = email);
+    const emailInput = await page.waitForSelector(emailAddressSelector);
+    await emailInput.type(email);
 
     console.log(`Setting value ${password} for selector ${passwordInputSelector}`);
-    await page.$eval(passwordInputSelector, el => el.value = password);
+    const passwordInput = await page.waitForSelector(passwordInputSelector);
+    await passwordInput.type(password);
 
     console.log(`Logging in using selector ${loginButtonSelector}`);
 
