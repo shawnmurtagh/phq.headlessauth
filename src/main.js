@@ -15,9 +15,10 @@ const puppeteer = require('puppeteer');
     const passwordInputSelector = 'input[id=password]';
     const loginButtonSelector = 'button[id=next]';
     const getClientUrl = 'https://apim-myprojecthq-dev.azure-api.net/setup/v1/Clients/?api-version=1.0';
-    const clientName = '';
+    const clientName = 'VoltWork Electric';
+    const showBrowser = true;
 
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: !showBrowser });
     const page = await browser.newPage();
 
     console.log(`Navigating to ${url}`);
@@ -53,7 +54,7 @@ const puppeteer = require('puppeteer');
         console.log(`Client buttons loaded`);
 
         //Find the span with the client name supplied in it, then grab its parent which will be the button to click
-        const button = await page.$x("//span[contains(., 'FSI')]/parent::*"); //button
+        const button = await page.$x(`//span[text() = '${clientName}']/parent::*`); //button
 
         //Even with waitForXPath above, sometimes the click happens too fast, so delay it for a second here
         await new Promise(x => setTimeout(x, 1000));
@@ -64,7 +65,9 @@ const puppeteer = require('puppeteer');
 
         console.log(`accessToken: ${localStorage.accessToken}`);
 
-        await browser.close();
+        if (!showBrowser) {
+            await browser.close();
+        }
 
         return localStorage.accessToken;
     }
