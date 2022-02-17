@@ -61,6 +61,12 @@ const puppeteer = require('puppeteer');
 
         await button[0].click();
 
+        console.log(`Waiting for page to load`);
+
+        await page.waitForNavigation()
+
+        console.log(`Page loaded`);
+
         const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
 
         console.log(`accessToken: ${localStorage.accessToken}`);
