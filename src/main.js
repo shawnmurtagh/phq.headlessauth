@@ -6,7 +6,7 @@ const puppeteer = require('puppeteer');
 
 (async () => {
 
-    console.log("Launching headless browser");
+    console.log("Launching browser");
 
     const email = 'admin1@foundationsoft.com'; //temp input
     const password = 'Foundation#1'; //temp input
@@ -15,6 +15,7 @@ const puppeteer = require('puppeteer');
     const passwordInputSelector = 'input[id=password]';
     const loginButtonSelector = 'button[id=next]';
     const getClientUrl = 'https://apim-myprojecthq-dev.azure-api.net/setup/v1/Clients/?api-version=1.0';
+    const clientName = '';
 
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
@@ -44,21 +45,26 @@ const puppeteer = require('puppeteer');
 
     if (firstResponse.ok) {
 
+        console.log(`Waiting for client buttons`);
+
         //Wait for the first client button to show
-        await page.waitForXPath('//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[1]/button')
+        await page.waitForXPath('//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[1]/button');
+
+        console.log(`Client buttons loaded`);
 
         //Find the span with the client name supplied in it, then grab its parent which will be the button to click
-        const button = await page.$x("//span[contains(., 'Volt')]/parent::*"); //button
+        const button = await page.$x("//span[contains(., 'FSI')]/parent::*"); //button
+
+        //Even with waitForXPath above, sometimes the click happens too fast, so delay it for a second here
+        await new Promise(x => setTimeout(x, 1000));
 
         await button[0].click();
-
-        console.log(`Extracting accessToken`);
 
         const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
 
         console.log(`accessToken: ${localStorage.accessToken}`);
 
-        //await browser.close();
+        await browser.close();
 
         return localStorage.accessToken;
     }
