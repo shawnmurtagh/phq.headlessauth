@@ -8,8 +8,8 @@ const puppeteer = require('puppeteer');
 
     console.log("Launching headless browser");
 
-    const email = 'admin1@foundationsoft.com';
-    const password = 'Foundation#1';
+    const email = ''; //temp input
+    const password = ''; //temp input
     const url = 'https://app.myprojecthq.com/';
     const emailAddressSelector = 'input[id=signInName]';
     const passwordInputSelector = 'input[id=password]';
