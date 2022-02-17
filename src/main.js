@@ -1,39 +1,57 @@
+//TODO harden
+//TODO select client?
+
 const puppeteer = require('puppeteer');
 
 (async () => {
 
     console.log("Launching headless browser");
 
-    const username = 'admin1@foundationsoft.com';
+    const email = 'admin1@foundationsoft.com';
     const password = 'Foundation#1';
     const url = 'https://app.myprojecthq.com/';
-    const loginInputSelector = 'input[id=signInName]';
+    const emailAddressSelector = 'input[id=signInName]';
+    const passwordInputSelector = 'input[id=password]';
+    const loginButtonSelector = 'button[id=next]';
+    const getClientUrl = 'https://apim-fslenterprise-prod.azure-api.net/myprojecthq/api/Clients/?api-version=1.0';
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
     console.log(`Navigating to ${url}`);
 
     await page.goto(url);
 
-    console.log(`Waiting for selector ${loginInputSelector}`);
+    console.log(`Waiting for selector ${emailAddressSelector}`);
 
-    await page.waitForSelector(loginInputSelector);
+    await page.waitForSelector(emailAddressSelector);
 
-    console.log(`Setting selector ${loginInputSelector}`);
+    console.log(`Setting selector ${emailAddressSelector}`);
 
-    await page.$eval('input[id=signInName]', el => el.value = 'admin1@foundationsoft.com');
-    await page.$eval('input[id=password]', el => el.value = 'Foundation#1');
+    console.log(`Setting value ${email} for selector ${emailAddressSelector}`);
+    await page.$eval(emailAddressSelector, el => el.value = email);
 
-    await page.$eval('button[id=next]', el => el.click());
+    console.log(`Setting value ${password} for selector ${passwordInputSelector}`);
+    await page.$eval(passwordInputSelector, el => el.value = password);
 
-    const firstResponse = await page.waitForResponse('https://apim-fslenterprise-prod.azure-api.net/myprojecthq/api/Clients/?api-version=1.0');
+    console.log(`Logging in using selector ${loginButtonSelector}`);
 
-    const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
+    await page.$eval(loginButtonSelector, el => el.click());
 
-    console.log(localStorage.accessToken);
+    console.log(`Waiting for getClient call ${getClientUrl}`);
+    const firstResponse = await page.waitForResponse(getClientUrl);
 
-    //await browser.close();
+    if (firstResponse.ok) {
 
-    return localStorage.accessToken;
+        console.log(`Extracting accessToken`);
+
+        const localStorage = await page.evaluate(() => Object.assign({}, window.localStorage));
+
+        console.log(`accessToken: ${localStorage.accessToken}`);
+
+        await browser.close();
+
+        return localStorage.accessToken;
+    }
+
 })();
