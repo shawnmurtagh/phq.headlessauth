@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 
 function log(message) {
     var currentDate = '[' + new Date().toLocaleTimeString() + ']';
-    console.log(`${currentDate}: ${message}`)
+    console.log(`${currentDate}: ${message}`);
 }
 
 (async () => {
@@ -21,7 +21,7 @@ function log(message) {
     const emailAddressSelector = 'input[id=signInName]';
     const passwordInputSelector = 'input[id=password]';
     const loginButtonSelector = 'button[id=next]';
-    const showBrowser = false;
+    const showBrowser = true;
 
     const browser = await puppeteer.launch({ headless: !showBrowser });
     const page = await browser.newPage();
@@ -68,7 +68,7 @@ function log(message) {
 
         log(`Waiting for page to load`);
 
-        await page.waitForNavigation()
+        await page.waitForNavigation();
 
         log(`Page loaded`);
 
